@@ -22,8 +22,8 @@ const config: Config = {
           900: "#134E4A",
           950: "#042F2E",
         },
-        income: "#10B981",   // emerald-500
-        expense: "#F43F5E",  // rose-500
+        income: "#10B981", // emerald-500
+        expense: "#F43F5E", // rose-500
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],

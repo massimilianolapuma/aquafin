@@ -2,7 +2,6 @@
 # Usage: docker compose up -d
 
 services:
-
   # ── PostgreSQL 16 ──────────────────────────────────────────────
   db:
     image: postgres:16-alpine
