@@ -1,5 +1,8 @@
 """FastAPI application factory."""
 
+import asyncio
+import contextlib
+import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -18,6 +21,9 @@ from app.api.imports import router as imports_router
 from app.api.transactions import router as transactions_router
 from app.core.config import settings
 from app.core.openapi import custom_openapi
+from app.services.retention import retention_loop
+
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Rate limiter
@@ -48,9 +54,14 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Application lifespan – startup and shutdown events."""
-    # Startup
+    # Startup: launch background retention cleanup
+    task = asyncio.create_task(retention_loop())
+    logger.info("Started temp-file retention cleanup background task")
     yield
-    # Shutdown
+    # Shutdown: cancel background task
+    task.cancel()
+    with contextlib.suppress(asyncio.CancelledError):
+        await task
 
 
 def create_app() -> FastAPI:
