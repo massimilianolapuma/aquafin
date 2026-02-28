@@ -38,7 +38,7 @@
         "eslint": "^8.57",
         "eslint-config-next": "^14.2",
         "@tailwindcss/forms": "^0.5",
-        "vitest": "^2.1",
+        "vitest": "^4.0",
         "@testing-library/react": "^16.1",
         "@vitejs/plugin-react": "^4.3",
         "@playwright/test": "^1.48"
