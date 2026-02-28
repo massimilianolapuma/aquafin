@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated
+from typing import Annotated
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import get_current_user
 from app.core.database import get_db
+from app.models.user import User
 from app.schemas.transaction import (
     BulkCategorizeRequest,
     BulkCategorizeResponse,
@@ -18,13 +21,6 @@ from app.schemas.transaction import (
     TransactionUpdate,
 )
 from app.services import transaction_service
-
-if TYPE_CHECKING:
-    from uuid import UUID
-
-    from sqlalchemy.ext.asyncio import AsyncSession
-
-    from app.models.user import User
 
 router = APIRouter(
     prefix="/api/v1/transactions",

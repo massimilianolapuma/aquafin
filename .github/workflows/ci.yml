@@ -29,7 +29,7 @@ jobs:
                   cache-dependency-path: backend/pyproject.toml
 
             - name: Install dependencies
-              run: pip install -e ".[dev,parser]"
+              run: pip install -e ".[dev,parser]" pytest-cov bandit slowapi
 
             - name: Ruff lint
               run: ruff check .
@@ -42,6 +42,12 @@ jobs:
 
             - name: Run tests
               run: pytest tests/ -v --tb=short
+
+            - name: Coverage check
+              run: pytest tests/ --cov=app --cov-report=xml --cov-fail-under=75
+
+            - name: Bandit SAST
+              run: bandit -r app/ -ll
 
     test-frontend:
         name: Frontend Tests

@@ -1,5 +1,8 @@
 """Application settings loaded from environment variables."""
 
+import os
+import tempfile
+
 from pydantic_settings import BaseSettings
 
 
@@ -24,7 +27,7 @@ class Settings(BaseSettings):
 
     # File upload
     UPLOAD_MAX_SIZE_MB: int = 10
-    UPLOAD_TEMP_DIR: str = "/tmp/aquafin-uploads"
+    UPLOAD_TEMP_DIR: str = os.path.join(tempfile.gettempdir(), "aquafin-uploads")  # noqa: B108
     UPLOAD_RETENTION_HOURS: int = 24
 
     model_config = {
