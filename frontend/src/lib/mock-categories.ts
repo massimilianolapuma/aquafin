@@ -1,0 +1,121 @@
+/**
+ * Mock data for categories and categorization rules.
+ * Will be replaced with real API calls once the backend endpoints are ready.
+ */
+
+/** Represents a transaction category (system or custom). */
+export interface Category {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  type: "expense" | "income";
+  parentId: string | null;
+  isSystem: boolean;
+  transactionCount: number;
+  totalAmount: number;
+}
+
+/** Match type for categorization rules. */
+export type MatchType = "contains" | "exact" | "regex" | "starts_with";
+
+/** Represents a categorization rule. */
+export interface CategorizationRule {
+  id: string;
+  pattern: string;
+  matchType: MatchType;
+  categoryId: string;
+  categoryName: string;
+  priority: number;
+}
+
+// ── System expense categories ────────────────────────────────────────
+
+export const MOCK_CATEGORIES: Category[] = [
+  // Alimentari (parent)
+  { id: "exp-alimentari", name: "Alimentari", icon: "🛒", color: "#4CAF50", type: "expense", parentId: null, isSystem: true, transactionCount: 42, totalAmount: 480.50 },
+  { id: "exp-supermercato", name: "Supermercato", icon: "🏪", color: "#66BB6A", type: "expense", parentId: "exp-alimentari", isSystem: true, transactionCount: 28, totalAmount: 320.00 },
+  { id: "exp-ristoranti", name: "Ristoranti", icon: "🍽️", color: "#81C784", type: "expense", parentId: "exp-alimentari", isSystem: true, transactionCount: 10, totalAmount: 125.50 },
+  { id: "exp-bar", name: "Bar e caffè", icon: "☕", color: "#A5D6A7", type: "expense", parentId: "exp-alimentari", isSystem: true, transactionCount: 4, totalAmount: 35.00 },
+
+  // Casa (parent)
+  { id: "exp-casa", name: "Casa", icon: "🏠", color: "#2196F3", type: "expense", parentId: null, isSystem: true, transactionCount: 5, totalAmount: 650.00 },
+  { id: "exp-affitto", name: "Affitto/mutuo", icon: "🔑", color: "#42A5F5", type: "expense", parentId: "exp-casa", isSystem: true, transactionCount: 1, totalAmount: 500.00 },
+  { id: "exp-utenze", name: "Utenze", icon: "💡", color: "#64B5F6", type: "expense", parentId: "exp-casa", isSystem: true, transactionCount: 3, totalAmount: 130.00 },
+  { id: "exp-manutenzione", name: "Manutenzione", icon: "🔧", color: "#90CAF9", type: "expense", parentId: "exp-casa", isSystem: true, transactionCount: 1, totalAmount: 20.00 },
+
+  // Trasporti (parent)
+  { id: "exp-trasporti", name: "Trasporti", icon: "🚗", color: "#FF9800", type: "expense", parentId: null, isSystem: true, transactionCount: 12, totalAmount: 280.30 },
+  { id: "exp-carburante", name: "Carburante", icon: "⛽", color: "#FFA726", type: "expense", parentId: "exp-trasporti", isSystem: true, transactionCount: 6, totalAmount: 180.00 },
+  { id: "exp-mezzi", name: "Mezzi pubblici", icon: "🚌", color: "#FFB74D", type: "expense", parentId: "exp-trasporti", isSystem: true, transactionCount: 4, totalAmount: 60.30 },
+  { id: "exp-auto", name: "Auto", icon: "🚙", color: "#FFCC80", type: "expense", parentId: "exp-trasporti", isSystem: true, transactionCount: 2, totalAmount: 40.00 },
+
+  // Salute (parent)
+  { id: "exp-salute", name: "Salute", icon: "❤️", color: "#F44336", type: "expense", parentId: null, isSystem: true, transactionCount: 4, totalAmount: 89.50 },
+  { id: "exp-farmacia", name: "Farmacia", icon: "💊", color: "#EF5350", type: "expense", parentId: "exp-salute", isSystem: true, transactionCount: 3, totalAmount: 45.00 },
+  { id: "exp-visite", name: "Visite mediche", icon: "🩺", color: "#E57373", type: "expense", parentId: "exp-salute", isSystem: true, transactionCount: 1, totalAmount: 44.50 },
+
+  // Shopping (parent)
+  { id: "exp-shopping", name: "Shopping", icon: "🛍️", color: "#9C27B0", type: "expense", parentId: null, isSystem: true, transactionCount: 6, totalAmount: 110.15 },
+  { id: "exp-abbigliamento", name: "Abbigliamento", icon: "👕", color: "#AB47BC", type: "expense", parentId: "exp-shopping", isSystem: true, transactionCount: 3, totalAmount: 75.00 },
+  { id: "exp-elettronica", name: "Elettronica", icon: "📱", color: "#BA68C8", type: "expense", parentId: "exp-shopping", isSystem: true, transactionCount: 3, totalAmount: 35.15 },
+
+  // Svago (parent)
+  { id: "exp-svago", name: "Svago", icon: "🎉", color: "#E91E63", type: "expense", parentId: null, isSystem: true, transactionCount: 8, totalAmount: 150.00 },
+  { id: "exp-cinema", name: "Cinema/teatro", icon: "🎬", color: "#EC407A", type: "expense", parentId: "exp-svago", isSystem: true, transactionCount: 2, totalAmount: 30.00 },
+  { id: "exp-sport", name: "Sport/palestra", icon: "🏋️", color: "#F06292", type: "expense", parentId: "exp-svago", isSystem: true, transactionCount: 4, totalAmount: 80.00 },
+  { id: "exp-viaggi", name: "Viaggi", icon: "✈️", color: "#F48FB1", type: "expense", parentId: "exp-svago", isSystem: true, transactionCount: 2, totalAmount: 40.00 },
+
+  // Servizi (parent)
+  { id: "exp-servizi", name: "Servizi", icon: "📡", color: "#00BCD4", type: "expense", parentId: null, isSystem: true, transactionCount: 6, totalAmount: 120.00 },
+  { id: "exp-telefono", name: "Telefono/internet", icon: "📶", color: "#26C6DA", type: "expense", parentId: "exp-servizi", isSystem: true, transactionCount: 2, totalAmount: 45.00 },
+  { id: "exp-abbonamenti", name: "Abbonamenti", icon: "📺", color: "#4DD0E1", type: "expense", parentId: "exp-servizi", isSystem: true, transactionCount: 3, totalAmount: 55.00 },
+  { id: "exp-assicurazioni", name: "Assicurazioni", icon: "🛡️", color: "#80DEEA", type: "expense", parentId: "exp-servizi", isSystem: true, transactionCount: 1, totalAmount: 20.00 },
+
+  // Finanza (parent)
+  { id: "exp-finanza", name: "Finanza", icon: "🏦", color: "#607D8B", type: "expense", parentId: null, isSystem: true, transactionCount: 3, totalAmount: 35.00 },
+  { id: "exp-commissioni", name: "Commissioni bancarie", icon: "💳", color: "#78909C", type: "expense", parentId: "exp-finanza", isSystem: true, transactionCount: 2, totalAmount: 15.00 },
+  { id: "exp-tasse", name: "Tasse", icon: "📋", color: "#90A4AE", type: "expense", parentId: "exp-finanza", isSystem: true, transactionCount: 1, totalAmount: 20.00 },
+
+  // Istruzione (parent)
+  { id: "exp-istruzione", name: "Istruzione", icon: "📚", color: "#795548", type: "expense", parentId: null, isSystem: true, transactionCount: 2, totalAmount: 60.00 },
+  { id: "exp-corsi", name: "Corsi", icon: "🎓", color: "#8D6E63", type: "expense", parentId: "exp-istruzione", isSystem: true, transactionCount: 1, totalAmount: 45.00 },
+  { id: "exp-libri", name: "Libri/materiale", icon: "📖", color: "#A1887F", type: "expense", parentId: "exp-istruzione", isSystem: true, transactionCount: 1, totalAmount: 15.00 },
+
+  // Altro spese
+  { id: "exp-altro", name: "Altro spese", icon: "📦", color: "#9E9E9E", type: "expense", parentId: null, isSystem: true, transactionCount: 5, totalAmount: 40.00 },
+
+  // ── System income categories ────────────────────────────────────────
+  { id: "inc-stipendio", name: "Stipendio", icon: "💰", color: "#10B981", type: "income", parentId: null, isSystem: true, transactionCount: 2, totalAmount: 5700.00 },
+  { id: "inc-freelance", name: "Freelance", icon: "💻", color: "#34D399", type: "income", parentId: null, isSystem: true, transactionCount: 3, totalAmount: 1200.00 },
+  { id: "inc-investimenti", name: "Investimenti", icon: "📈", color: "#6EE7B7", type: "income", parentId: null, isSystem: true, transactionCount: 1, totalAmount: 150.00 },
+  { id: "inc-rimborsi", name: "Rimborsi", icon: "🔄", color: "#A7F3D0", type: "income", parentId: null, isSystem: true, transactionCount: 2, totalAmount: 85.00 },
+  { id: "inc-regali", name: "Regali", icon: "🎁", color: "#D1FAE5", type: "income", parentId: null, isSystem: true, transactionCount: 1, totalAmount: 50.00 },
+  { id: "inc-altro", name: "Altro entrate", icon: "📥", color: "#ECFDF5", type: "income", parentId: null, isSystem: true, transactionCount: 0, totalAmount: 0 },
+
+  // ── Mock custom categories ──────────────────────────────────────────
+  { id: "cust-animali", name: "Animali domestici", icon: "🐾", color: "#FF6F00", type: "expense", parentId: null, isSystem: false, transactionCount: 3, totalAmount: 95.00 },
+  { id: "cust-donazioni", name: "Donazioni", icon: "❤️‍🔥", color: "#D50000", type: "expense", parentId: null, isSystem: false, transactionCount: 1, totalAmount: 25.00 },
+  { id: "cust-side-income", name: "Vendite online", icon: "🛒", color: "#00C853", type: "income", parentId: null, isSystem: false, transactionCount: 4, totalAmount: 320.00 },
+];
+
+// ── Mock categorization rules ─────────────────────────────────────────
+
+export const MOCK_RULES: CategorizationRule[] = [
+  { id: "rule-1", pattern: "ESSELUNGA", matchType: "contains", categoryId: "exp-supermercato", categoryName: "Supermercato", priority: 10 },
+  { id: "rule-2", pattern: "CONAD", matchType: "contains", categoryId: "exp-supermercato", categoryName: "Supermercato", priority: 10 },
+  { id: "rule-3", pattern: "LIDL", matchType: "contains", categoryId: "exp-supermercato", categoryName: "Supermercato", priority: 10 },
+  { id: "rule-4", pattern: "ENEL ENERGIA", matchType: "contains", categoryId: "exp-utenze", categoryName: "Utenze", priority: 20 },
+  { id: "rule-5", pattern: "Netflix", matchType: "exact", categoryId: "exp-abbonamenti", categoryName: "Abbonamenti", priority: 30 },
+  { id: "rule-6", pattern: "Spotify", matchType: "exact", categoryId: "exp-abbonamenti", categoryName: "Abbonamenti", priority: 30 },
+  { id: "rule-7", pattern: "^BONIFICO STIPENDIO", matchType: "regex", categoryId: "inc-stipendio", categoryName: "Stipendio", priority: 50 },
+  { id: "rule-8", pattern: "FARMACIA", matchType: "starts_with", categoryId: "exp-farmacia", categoryName: "Farmacia", priority: 15 },
+];
+
+// ── Color presets for the category form ────────────────────────────────
+
+export const COLOR_PRESETS = [
+  "#4CAF50", "#2196F3", "#FF9800", "#E91E63",
+  "#9C27B0", "#00BCD4", "#F44336", "#607D8B",
+  "#795548", "#FF6F00", "#10B981", "#6366F1",
+];
