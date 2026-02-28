@@ -27,7 +27,8 @@ async function apiFetch<T>(
   const { token, ...fetchOptions } = options;
 
   // When sending FormData let the browser set Content-Type (with boundary)
-  const isFormData = typeof FormData !== "undefined" && fetchOptions.body instanceof FormData;
+  const isFormData =
+    typeof FormData !== "undefined" && fetchOptions.body instanceof FormData;
 
   const headers: Record<string, string> = {
     ...(isFormData ? {} : { "Content-Type": "application/json" }),
