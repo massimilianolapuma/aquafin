@@ -29,5 +29,20 @@
         "export": "Esporta",
         "settings": "Impostazioni",
         "locale_switch": "Cambia lingua"
+    },
+    "dashboard": {
+        "title": "Dashboard",
+        "balance": "Saldo totale",
+        "income": "Entrate del mese",
+        "expenses": "Spese del mese",
+        "savingsRate": "Tasso risparmio",
+        "categoryBreakdown": "Spese per categoria",
+        "monthlyTrend": "Trend mensile",
+        "recentTransactions": "Ultime transazioni",
+        "quickActions": "Azioni rapide",
+        "uploadFile": "Importa file",
+        "newAccount": "Nuovo conto",
+        "viewAll": "Vedi tutte",
+        "noTransactions": "Nessuna transazione recente"
     }
 }

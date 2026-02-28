@@ -29,5 +29,20 @@
         "export": "Export",
         "settings": "Settings",
         "locale_switch": "Switch language"
+    },
+    "dashboard": {
+        "title": "Dashboard",
+        "balance": "Total balance",
+        "income": "Monthly income",
+        "expenses": "Monthly expenses",
+        "savingsRate": "Savings rate",
+        "categoryBreakdown": "Expenses by category",
+        "monthlyTrend": "Monthly trend",
+        "recentTransactions": "Recent transactions",
+        "quickActions": "Quick actions",
+        "uploadFile": "Upload file",
+        "newAccount": "New account",
+        "viewAll": "View all",
+        "noTransactions": "No recent transactions"
     }
 }
