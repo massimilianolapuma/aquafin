@@ -1,0 +1,6 @@
+ID,Date,Type,Amount,Currency,Name,Description
+SAT001,2025-03-01,Payment,-12.50,EUR,Bar Roma,Caffè e cornetto
+SAT002,2025-03-02,Cashback,0.25,EUR,Satispay,Cashback marzo
+SAT003,2025-03-05,Payment,-8.90,EUR,Pizzeria Da Mario,Pranzo
+SAT004,2025-03-10,Refund,12.50,EUR,Bar Roma,Rimborso
+SAT005,2025-03-15,Payment,-25.00,EUR,Farmacia Comunale,Medicinali
