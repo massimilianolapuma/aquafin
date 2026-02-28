@@ -4,6 +4,7 @@ from __future__ import annotations
 from .bank_csv import BankCSVParser
 from .base import BaseParser, ParseResult
 from .paypal import PayPalParser
+from .pdf_parser import PDFParser
 from .satispay import SatispayParser
 
 
@@ -15,6 +16,7 @@ class ParserRegistry:
             BankCSVParser(),
             SatispayParser(),
             PayPalParser(),
+            PDFParser(),
         ]
 
     def detect(self, file_path: str, content: bytes) -> BaseParser | None:

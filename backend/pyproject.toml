@@ -28,6 +28,7 @@ dev = [
     "ruff>=0.8,<1",
     "mypy>=1.13,<2",
     "aiosqlite>=0.20,<1",
+    "fpdf2>=2.7,<3",
 ]
 parser = [
     "pandas>=2.2,<3",
