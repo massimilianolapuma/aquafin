@@ -6,9 +6,12 @@ from collections.abc import AsyncIterator
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.analytics import router as analytics_router
 from app.api.auth import router as auth_router
+from app.api.exports import router as exports_router
 from app.api.accounts import router as accounts_router
 from app.api.imports import router as imports_router
+from app.api.transactions import router as transactions_router
 from app.core.config import settings
 
 
@@ -41,8 +44,11 @@ def create_app() -> FastAPI:
 
     # Routers
     app.include_router(auth_router)
+    app.include_router(exports_router)
     app.include_router(accounts_router)
     app.include_router(imports_router)
+    app.include_router(analytics_router)
+    app.include_router(transactions_router)
 
     # Health check
     @app.get("/api/health", tags=["health"])
