@@ -1,4 +1,5 @@
 """Satispay CSV export parser."""
+
 from __future__ import annotations
 
 import csv
@@ -174,7 +175,7 @@ class SatispayParser(BaseParser):
         errors: list[str] = []
 
         for idx, row in df.iterrows():
-            row_num = int(idx) + 2
+            row_num = int(idx) + 2  # type: ignore[call-overload]
             try:
                 # Date
                 date_col = col_map.get("date")
@@ -213,7 +214,7 @@ class SatispayParser(BaseParser):
                 tx_type = _TYPE_MAP.get(raw_type, "expense" if amount < 0 else "income")
 
                 # Metadata
-                metadata: dict = {}
+                metadata: dict[str, str] = {}
                 id_col = col_map.get("id")
                 if id_col:
                     metadata["satispay_id"] = str(row[id_col]).strip()

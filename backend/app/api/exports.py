@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import io
-from datetime import date, datetime, timezone
-from typing import Annotated
+from datetime import UTC, date, datetime
+from typing import Annotated, Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
@@ -46,12 +46,10 @@ async def export_csv(
         date_to=date_to,
         type=type,
     )
-    csv_content = await export_service.export_transactions_csv(
-        db, current_user.id, filters
-    )
+    csv_content = await export_service.export_transactions_csv(db, current_user.id, filters)
     # UTF-8 BOM so Italian Excel opens the file correctly
     output = io.BytesIO(csv_content.encode("utf-8-sig"))
-    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
     filename = f"aquafin_export_{timestamp}.csv"
     return StreamingResponse(
         output,
@@ -74,7 +72,7 @@ async def export_json(
     date_from: date | None = Query(default=None),
     date_to: date | None = Query(default=None),
     type: str | None = Query(default=None),
-) -> list[dict]:
+) -> list[dict[str, Any]]:
     """Export user transactions as a JSON array."""
     filters = ExportFilters(
         account_id=account_id,
@@ -83,9 +81,7 @@ async def export_json(
         date_to=date_to,
         type=type,
     )
-    return await export_service.export_transactions_json(
-        db, current_user.id, filters
-    )
+    return await export_service.export_transactions_json(db, current_user.id, filters)
 
 
 # ---------------------------------------------------------------------------

@@ -1,4 +1,5 @@
 """Parser registry with auto-detection."""
+
 from __future__ import annotations
 
 from .bank_csv import BankCSVParser

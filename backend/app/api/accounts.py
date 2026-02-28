@@ -63,9 +63,7 @@ async def update_account(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> AccountRead:
     """Update an existing account."""
-    account = await account_service.update_account(
-        db, current_user.id, account_id, body
-    )
+    account = await account_service.update_account(db, current_user.id, account_id, body)
     return AccountRead.model_validate(account)
 
 

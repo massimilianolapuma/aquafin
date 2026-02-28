@@ -1,9 +1,11 @@
 """Data models for categorization results."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
+from typing import Any
 
 
 @dataclass
@@ -26,5 +28,5 @@ class CategorizedTransaction:
     description: str
     original_description: str
     type: str
-    metadata: dict
+    metadata: dict[str, Any]
     categorization: CategorizationResult

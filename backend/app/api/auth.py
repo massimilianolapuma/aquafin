@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Annotated, TypeAlias
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy import select
@@ -16,8 +16,8 @@ from app.schemas.user import ClerkWebhookPayload, UserRead, UserUpdate
 router = APIRouter(prefix="/api/v1", tags=["auth"])
 
 # Annotated dependency aliases
-DbSession: TypeAlias = Annotated[AsyncSession, Depends(get_db)]
-CurrentUser: TypeAlias = Annotated[User, Depends(get_current_user)]
+type DbSession = Annotated[AsyncSession, Depends(get_db)]
+type CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
 # ---------------------------------------------------------------------------
@@ -25,7 +25,7 @@ CurrentUser: TypeAlias = Annotated[User, Depends(get_current_user)]
 # ---------------------------------------------------------------------------
 
 
-async def _handle_user_created(data: dict, db: AsyncSession) -> None:
+async def _handle_user_created(data: dict[str, Any], db: AsyncSession) -> None:
     email_addresses = data.get("email_addresses", [])
     email = email_addresses[0]["email_address"] if email_addresses else ""
     user = User(
@@ -37,7 +37,7 @@ async def _handle_user_created(data: dict, db: AsyncSession) -> None:
     await db.flush()
 
 
-async def _handle_user_updated(data: dict, db: AsyncSession) -> None:
+async def _handle_user_updated(data: dict[str, Any], db: AsyncSession) -> None:
     result = await db.execute(select(User).where(User.clerk_id == data["id"]))
     user = result.scalar_one_or_none()
     if user is None:
@@ -49,7 +49,7 @@ async def _handle_user_updated(data: dict, db: AsyncSession) -> None:
         user.display_name = data.get("first_name") or data.get("username")
 
 
-async def _handle_user_deleted(data: dict, db: AsyncSession) -> None:
+async def _handle_user_deleted(data: dict[str, Any], db: AsyncSession) -> None:
     result = await db.execute(select(User).where(User.clerk_id == data["id"]))
     user = result.scalar_one_or_none()
     if user is not None:

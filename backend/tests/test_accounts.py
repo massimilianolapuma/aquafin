@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 from httpx import ASGITransport, AsyncClient
@@ -26,7 +26,7 @@ OTHER_USER_ID = uuid.UUID("00000000-0000-4000-8000-000000000002")
 
 def _make_mock_user(user_id: uuid.UUID = MOCK_USER_ID) -> User:
     """Create a lightweight User instance for dependency overrides."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return User(
         id=user_id,
         clerk_id=f"clerk_{user_id.hex[:8]}",
@@ -241,8 +241,6 @@ class TestAccountsAPI:
     @pytest.mark.asyncio
     async def test_list_after_multiple_creates(self, client: AsyncClient) -> None:
         for name in ("A", "B", "C"):
-            await client.post(
-                "/api/v1/accounts/", json={"name": name, "type": "cash"}
-            )
+            await client.post("/api/v1/accounts/", json={"name": name, "type": "cash"})
         resp = await client.get("/api/v1/accounts/")
         assert resp.json()["total"] == 3

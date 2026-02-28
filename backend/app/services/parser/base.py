@@ -1,10 +1,12 @@
 """Base parser protocol and shared data structures."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import date
 from decimal import Decimal
+from typing import Any
 
 
 @dataclass
@@ -17,7 +19,7 @@ class RawTransaction:
     description: str
     original_description: str
     type: str  # "income" | "expense" | "transfer"
-    metadata: dict = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass

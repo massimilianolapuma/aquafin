@@ -10,8 +10,6 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
-from decimal import Decimal
-from typing import Any
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -80,6 +78,7 @@ def _make_account(name: str) -> Account:
 
 # ---- Mock DB ----
 
+
 async def _override_get_db() -> AsyncMock:  # type: ignore[misc]
     yield AsyncMock()  # type: ignore[misc]
 
@@ -143,34 +142,22 @@ class TestAnalyticsDateInjection:
     """Verify that analytics date parameters reject malicious input."""
 
     @pytest.mark.parametrize("payload", SQL_INJECTION_PAYLOADS)
-    async def test_by_category_date_from_injection(
-        self, client: AsyncClient, payload: str
-    ) -> None:
+    async def test_by_category_date_from_injection(self, client: AsyncClient, payload: str) -> None:
         """Injecting SQL via date_from should return 422 (validation error)."""
-        resp = await client.get(
-            "/api/v1/analytics/by-category", params={"date_from": payload}
-        )
+        resp = await client.get("/api/v1/analytics/by-category", params={"date_from": payload})
         # FastAPI's date parsing should reject non-date strings
         assert resp.status_code == 422
 
     @pytest.mark.parametrize("payload", SQL_INJECTION_PAYLOADS)
-    async def test_by_category_date_to_injection(
-        self, client: AsyncClient, payload: str
-    ) -> None:
+    async def test_by_category_date_to_injection(self, client: AsyncClient, payload: str) -> None:
         """Injecting SQL via date_to should return 422 (validation error)."""
-        resp = await client.get(
-            "/api/v1/analytics/by-category", params={"date_to": payload}
-        )
+        resp = await client.get("/api/v1/analytics/by-category", params={"date_to": payload})
         assert resp.status_code == 422
 
     @pytest.mark.parametrize("payload", SQL_INJECTION_PAYLOADS)
-    async def test_by_account_date_injection(
-        self, client: AsyncClient, payload: str
-    ) -> None:
+    async def test_by_account_date_injection(self, client: AsyncClient, payload: str) -> None:
         """Injecting SQL via by-account date_from should return 422."""
-        resp = await client.get(
-            "/api/v1/analytics/by-account", params={"date_from": payload}
-        )
+        resp = await client.get("/api/v1/analytics/by-account", params={"date_from": payload})
         assert resp.status_code == 422
 
 

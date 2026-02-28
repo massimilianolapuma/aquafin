@@ -74,7 +74,11 @@ async def list_transactions(
 
     # Pagination
     offset = (params.page - 1) * params.limit
-    stmt = base.order_by(Transaction.date.desc(), Transaction.created_at.desc()).offset(offset).limit(params.limit)
+    stmt = (
+        base.order_by(Transaction.date.desc(), Transaction.created_at.desc())
+        .offset(offset)
+        .limit(params.limit)
+    )
 
     result = await db.execute(stmt)
     items = list(result.scalars().all())
@@ -166,9 +170,7 @@ async def recategorize(
             .where(
                 Transaction.id != transaction_id,
                 Transaction.original_description == transaction.original_description,
-                Transaction.account_id.in_(
-                    select(Account.id).where(Account.user_id == user_id)
-                ),
+                Transaction.account_id.in_(select(Account.id).where(Account.user_id == user_id)),
             )
             .values(
                 category_id=category_id,
@@ -199,9 +201,7 @@ async def bulk_categorize(
         update(Transaction)
         .where(
             Transaction.id.in_(transaction_ids),
-            Transaction.account_id.in_(
-                select(Account.id).where(Account.user_id == user_id)
-            ),
+            Transaction.account_id.in_(select(Account.id).where(Account.user_id == user_id)),
         )
         .values(
             category_id=category_id,
@@ -210,4 +210,4 @@ async def bulk_categorize(
     )
     result = await db.execute(stmt)
     await db.flush()
-    return result.rowcount
+    return result.rowcount  # type: ignore[no-any-return, attr-defined]

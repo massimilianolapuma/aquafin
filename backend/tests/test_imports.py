@@ -4,9 +4,8 @@ from __future__ import annotations
 
 import json
 import uuid
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from decimal import Decimal
-from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -26,7 +25,7 @@ from app.schemas.import_record import (
     ImportUploadResponse,
     TransactionPreview,
 )
-from app.services.categorization.models import CategorizedTransaction, CategorizationResult
+from app.services.categorization.models import CategorizationResult, CategorizedTransaction
 from app.services.parser.base import ParseResult, RawTransaction
 
 # ---------------------------------------------------------------------------
@@ -51,7 +50,7 @@ BANK_CSV_CONTENT = (
 
 def _make_mock_user(user_id: uuid.UUID = MOCK_USER_ID) -> User:
     """Create a lightweight User instance for dependency overrides."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return User(
         id=user_id,
         clerk_id=f"clerk_{user_id.hex[:8]}",
@@ -74,7 +73,7 @@ def _make_import_record(
     imported_count: int = 0,
 ) -> ImportRecord:
     """Create a mock ImportRecord."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return ImportRecord(
         id=import_id,
         account_id=account_id,
@@ -474,7 +473,7 @@ class TestPreviewSerialization:
         deserialized = _deserialize_categorized(serialized)
 
         assert len(deserialized) == len(original)
-        for orig, deser in zip(original, deserialized):
+        for orig, deser in zip(original, deserialized, strict=True):
             assert orig.date == deser.date
             assert orig.amount == deser.amount
             assert orig.currency == deser.currency
@@ -677,9 +676,7 @@ class TestConfirmEndpoint:
     @pytest.mark.asyncio
     async def test_confirm_success(self, client: AsyncClient) -> None:
         """Successful confirm returns confirmed status and counts."""
-        record = _make_import_record(
-            status=ImportStatus.confirmed, imported_count=3
-        )
+        record = _make_import_record(status=ImportStatus.confirmed, imported_count=3)
 
         with patch(
             "app.api.imports.import_service.confirm_import",
@@ -699,10 +696,7 @@ class TestConfirmEndpoint:
     @pytest.mark.asyncio
     async def test_confirm_with_overrides(self, client: AsyncClient) -> None:
         """Confirm with category_overrides passes them to the service."""
-        record = _make_import_record(
-            status=ImportStatus.confirmed, imported_count=3
-        )
-        overrides = {0: "Alimentari", 2: "Bollette"}
+        record = _make_import_record(status=ImportStatus.confirmed, imported_count=3)
 
         with patch(
             "app.api.imports.import_service.confirm_import",
@@ -787,11 +781,14 @@ class TestListEndpoint:
     @pytest.mark.asyncio
     async def test_list_imports(self, client: AsyncClient) -> None:
         """List imports returns items and total."""
-        records = [_make_import_record(), _make_import_record(
-            import_id=uuid.UUID("00000000-0000-4000-8000-bbb000000002"),
-            status=ImportStatus.confirmed,
-            imported_count=6,
-        )]
+        records = [
+            _make_import_record(),
+            _make_import_record(
+                import_id=uuid.UUID("00000000-0000-4000-8000-bbb000000002"),
+                status=ImportStatus.confirmed,
+                imported_count=6,
+            ),
+        ]
 
         with patch(
             "app.api.imports.import_service.list_imports",

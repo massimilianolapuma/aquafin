@@ -17,9 +17,7 @@ async def seed_categories(session: AsyncSession) -> int:
     """
     count = 0
 
-    for sort_order, (name_key, icon, color, is_income, children) in enumerate(
-        SYSTEM_CATEGORIES
-    ):
+    for sort_order, (name_key, icon, color, is_income, children) in enumerate(SYSTEM_CATEGORIES):
         parent = Category(
             id=uuid.uuid4(),
             user_id=None,

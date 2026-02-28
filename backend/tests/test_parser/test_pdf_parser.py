@@ -1,4 +1,5 @@
 """Tests for the PDF parser."""
+
 from __future__ import annotations
 
 from decimal import Decimal
@@ -6,7 +7,6 @@ from decimal import Decimal
 import pytest
 
 from app.services.parser.pdf_parser import PDFParser, _parse_italian_amount, _parse_italian_date
-
 
 # ---------------------------------------------------------------------------
 # Helper: generate PDF bytes with a table using fpdf2

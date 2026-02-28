@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -37,7 +37,7 @@ MOCK_CATEGORY_ID_2 = uuid.UUID("00000000-0000-4000-8000-000000000021")
 
 def _make_mock_user(user_id: uuid.UUID = MOCK_USER_ID) -> User:
     """Create a lightweight User instance for dependency overrides."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return User(
         id=user_id,
         clerk_id=f"clerk_{user_id.hex[:8]}",
@@ -52,6 +52,7 @@ def _make_mock_user(user_id: uuid.UUID = MOCK_USER_ID) -> User:
 
 
 # ---- Dependency overrides ----
+
 
 async def _override_get_db() -> AsyncMock:  # type: ignore[misc]
     yield AsyncMock()  # type: ignore[misc]
@@ -182,48 +183,68 @@ class TestAnalyticsSchemas:
     def test_summary_valid(self) -> None:
         """AnalyticsSummary accepts correct data."""
         s = AnalyticsSummary(
-            total_income=5000.0, total_expenses=2000.0, balance=3000.0,
-            transaction_count=10, period_start=date(2025, 1, 1), period_end=date(2025, 1, 31),
+            total_income=5000.0,
+            total_expenses=2000.0,
+            balance=3000.0,
+            transaction_count=10,
+            period_start=date(2025, 1, 1),
+            period_end=date(2025, 1, 31),
         )
         assert s.balance == 3000.0
 
     def test_summary_zero(self) -> None:
         """AnalyticsSummary works with zeros."""
         s = AnalyticsSummary(
-            total_income=0, total_expenses=0, balance=0,
-            transaction_count=0, period_start=date(2025, 1, 1), period_end=date(2025, 1, 31),
+            total_income=0,
+            total_expenses=0,
+            balance=0,
+            transaction_count=0,
+            period_start=date(2025, 1, 1),
+            period_end=date(2025, 1, 31),
         )
         assert s.transaction_count == 0
 
     def test_category_breakdown_valid(self) -> None:
         """CategoryBreakdown with null category_id."""
         cb = CategoryBreakdown(
-            category_id=None, category_name="Uncategorized",
-            total=100.0, count=5, percentage=33.33,
+            category_id=None,
+            category_name="Uncategorized",
+            total=100.0,
+            count=5,
+            percentage=33.33,
         )
         assert cb.category_id is None
 
     def test_category_breakdown_with_id(self) -> None:
         """CategoryBreakdown with a valid category_id."""
         cb = CategoryBreakdown(
-            category_id=MOCK_CATEGORY_ID, category_name="Groceries",
-            total=250.0, count=3, percentage=66.67,
+            category_id=MOCK_CATEGORY_ID,
+            category_name="Groceries",
+            total=250.0,
+            count=3,
+            percentage=66.67,
         )
         assert cb.category_id == MOCK_CATEGORY_ID
 
     def test_monthly_trend_valid(self) -> None:
         """MonthlyTrend accepts YYYY-MM format."""
         mt = MonthlyTrend(
-            month="2025-06", income=3000, expenses=1500,
-            balance=1500, transaction_count=20,
+            month="2025-06",
+            income=3000,
+            expenses=1500,
+            balance=1500,
+            transaction_count=20,
         )
         assert mt.month == "2025-06"
 
     def test_account_breakdown_valid(self) -> None:
         """AccountBreakdown validates correctly."""
         ab = AccountBreakdown(
-            account_id=MOCK_ACCOUNT_ID, account_name="Main Bank",
-            total_income=5000, total_expenses=2000, balance=3000,
+            account_id=MOCK_ACCOUNT_ID,
+            account_name="Main Bank",
+            total_income=5000,
+            total_expenses=2000,
+            balance=3000,
             transaction_count=15,
         )
         assert ab.balance == 3000
@@ -231,8 +252,10 @@ class TestAnalyticsSchemas:
     def test_category_breakdown_response_valid(self) -> None:
         """CategoryBreakdownResponse wraps items correctly."""
         resp = CategoryBreakdownResponse(
-            items=[], total_expenses=0,
-            period_start=date(2025, 1, 1), period_end=date(2025, 1, 31),
+            items=[],
+            total_expenses=0,
+            period_start=date(2025, 1, 1),
+            period_end=date(2025, 1, 31),
         )
         assert resp.items == []
 
@@ -361,7 +384,9 @@ class TestAnalyticsEndpoints:
 
     @pytest.mark.asyncio
     @patch.object(analytics_service, "get_by_category", new_callable=AsyncMock)
-    async def test_by_category_uncategorized(self, mock_svc: AsyncMock, client: AsyncClient) -> None:
+    async def test_by_category_uncategorized(
+        self, mock_svc: AsyncMock, client: AsyncClient
+    ) -> None:
         """Uncategorized items appear with null category_id."""
         mock_svc.return_value = _MOCK_CATEGORY_RESP
         resp = await client.get("/api/v1/analytics/by-category")

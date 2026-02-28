@@ -1,4 +1,5 @@
 """Tests for the rule-based categorization engine."""
+
 from __future__ import annotations
 
 from datetime import date
@@ -7,11 +8,10 @@ from decimal import Decimal
 import pytest
 
 from app.services.categorization.engine import CategorizationEngine, UserRule
-from app.services.categorization.models import CategorizationResult
 from app.services.parser.base import RawTransaction
 
-
 # ── helpers ─────────────────────────────────────────────────────────────────
+
 
 def _make_tx(
     description: str,
@@ -30,6 +30,7 @@ def _make_tx(
 
 
 # ── user rule matching ──────────────────────────────────────────────────────
+
 
 class TestUserRuleContains:
     def test_contains_match(self) -> None:
@@ -158,6 +159,7 @@ class TestUserRulePriority:
 
 # ── keyword matching ────────────────────────────────────────────────────────
 
+
 class TestKeywordMatching:
     def test_keyword_confidence(self) -> None:
         engine = CategorizationEngine()
@@ -200,27 +202,22 @@ class TestKeywordMatching:
 
 # ── pattern matching ────────────────────────────────────────────────────────
 
+
 class TestPatternMatching:
     def test_pattern_matched_by(self) -> None:
         engine = CategorizationEngine()
-        result = engine.categorize(
-            _make_tx("GIROCONTO TRA CONTI CORRENTI")
-        )
+        result = engine.categorize(_make_tx("GIROCONTO TRA CONTI CORRENTI"))
         assert result.categorization.matched_by == "pattern"
 
     def test_bonifico_stipendio(self) -> None:
         engine = CategorizationEngine()
-        result = engine.categorize(
-            _make_tx("BONIFICO SEPA EMOLUMENTI MESE CORRENTE")
-        )
+        result = engine.categorize(_make_tx("BONIFICO SEPA EMOLUMENTI MESE CORRENTE"))
         assert result.categorization.category_name == "Stipendio"
         assert result.categorization.confidence == 0.9
 
     def test_addebito_sdd(self) -> None:
         engine = CategorizationEngine()
-        result = engine.categorize(
-            _make_tx("ADDEBITO SDD ENEL SERVIZIO ELETTRICO")
-        )
+        result = engine.categorize(_make_tx("ADDEBITO SDD ENEL SERVIZIO ELETTRICO"))
         assert result.categorization.category_name == "Utenze"
 
     def test_rata_mutuo(self) -> None:
@@ -231,9 +228,7 @@ class TestPatternMatching:
     def test_pagamento_pos_pattern(self) -> None:
         engine = CategorizationEngine()
         # A generic POS description without any keyword match
-        result = engine.categorize(
-            _make_tx("PAGAMENTO POS 12345 GENERICO")
-        )
+        result = engine.categorize(_make_tx("PAGAMENTO POS 12345 GENERICO"))
         assert result.categorization.category_name == "Altro spese"
 
     def test_f24_taxes(self) -> None:
@@ -244,27 +239,25 @@ class TestPatternMatching:
 
 # ── fallback ────────────────────────────────────────────────────────────────
 
+
 class TestFallback:
     def test_expense_fallback(self) -> None:
         engine = CategorizationEngine()
-        result = engine.categorize(
-            _make_tx("XYZNOMATCH1234567890", tx_type="expense")
-        )
+        result = engine.categorize(_make_tx("XYZNOMATCH1234567890", tx_type="expense"))
         assert result.categorization.category_name == "Altro spese"
         assert result.categorization.confidence == 0.0
         assert result.categorization.matched_by == "fallback"
 
     def test_income_fallback(self) -> None:
         engine = CategorizationEngine()
-        result = engine.categorize(
-            _make_tx("XYZNOMATCH1234567890", tx_type="income")
-        )
+        result = engine.categorize(_make_tx("XYZNOMATCH1234567890", tx_type="income"))
         assert result.categorization.category_name == "Altro entrate"
         assert result.categorization.confidence == 0.0
         assert result.categorization.matched_by == "fallback"
 
 
 # ── pipeline priority ──────────────────────────────────────────────────────
+
 
 class TestPipelinePriority:
     def test_user_rule_beats_keyword(self) -> None:
@@ -299,6 +292,7 @@ class TestPipelinePriority:
 
 # ── batch ───────────────────────────────────────────────────────────────────
 
+
 class TestBatch:
     def test_categorize_batch(self) -> None:
         engine = CategorizationEngine()
@@ -315,6 +309,7 @@ class TestBatch:
 
 
 # ── CategorizedTransaction fields ──────────────────────────────────────────
+
 
 class TestCategorizedTransactionFields:
     def test_fields_propagated(self) -> None:

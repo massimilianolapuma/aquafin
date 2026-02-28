@@ -23,9 +23,7 @@ async def list_accounts(db: AsyncSession, user_id: UUID) -> list[Account]:
     return list(result.scalars().all())
 
 
-async def create_account(
-    db: AsyncSession, user_id: UUID, data: AccountCreate
-) -> Account:
+async def create_account(db: AsyncSession, user_id: UUID, data: AccountCreate) -> Account:
     """Create a new account for *user_id*."""
     account = Account(
         user_id=user_id,
@@ -41,9 +39,7 @@ async def create_account(
     return account
 
 
-async def get_account(
-    db: AsyncSession, user_id: UUID, account_id: UUID
-) -> Account:
+async def get_account(db: AsyncSession, user_id: UUID, account_id: UUID) -> Account:
     """Fetch a single account ensuring it belongs to *user_id*.
 
     Raises 404 if the account does not exist or doesn't belong to the user.
@@ -81,9 +77,7 @@ async def update_account(
     return account
 
 
-async def delete_account(
-    db: AsyncSession, user_id: UUID, account_id: UUID
-) -> None:
+async def delete_account(db: AsyncSession, user_id: UUID, account_id: UUID) -> None:
     """Soft-delete an account by setting ``is_active=False``.
 
     Raises 404 if the account does not exist or doesn't belong to the user.

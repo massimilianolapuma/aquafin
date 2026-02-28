@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import csv
 import io
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import Any
 from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
 from app.models.account import Account
 from app.models.categorization_rule import CategorizationRule
@@ -18,7 +18,6 @@ from app.models.import_record import ImportRecord
 from app.models.transaction import Transaction
 from app.models.user import User
 from app.schemas.export import ExportFilters, TransactionExportRow
-
 
 # ---------------------------------------------------------------------------
 # Internal helpers
@@ -43,7 +42,12 @@ async def _query_transactions(
 ) -> list[TransactionExportRow]:
     """Fetch transactions owned by *user_id* with optional filters."""
     stmt = (
-        select(Transaction, Account.name.label("account_name"), Category.name_custom.label("category_custom"), Category.name_key.label("category_key"))
+        select(
+            Transaction,
+            Account.name.label("account_name"),
+            Category.name_custom.label("category_custom"),
+            Category.name_key.label("category_key"),
+        )
         .join(Account, Transaction.account_id == Account.id)
         .outerjoin(Category, Transaction.category_id == Category.id)
         .where(Account.user_id == user_id)
@@ -74,9 +78,7 @@ async def _query_transactions(
                 category_name=cat_custom or cat_key,
                 account_name=acct_name,
                 categorization_method=(
-                    txn.categorization_method.value
-                    if txn.categorization_method
-                    else None
+                    txn.categorization_method.value if txn.categorization_method else None
                 ),
             )
         )
@@ -119,7 +121,7 @@ async def export_transactions_json(
     db: AsyncSession,
     user_id: UUID,
     filters: ExportFilters,
-) -> list[dict]:
+) -> list[dict[str, Any]]:
     """Return a list of dicts representing the user's transactions."""
     rows = await _query_transactions(db, user_id, filters)
     return [
@@ -137,13 +139,13 @@ async def export_transactions_json(
     ]
 
 
-async def export_gdpr(db: AsyncSession, user_id: UUID) -> dict:
+async def export_gdpr(db: AsyncSession, user_id: UUID) -> dict[str, Any]:
     """Full GDPR data-portability export for a single user."""
 
     # User ------------------------------------------------------------------
     user_result = await db.execute(select(User).where(User.id == user_id))
     user = user_result.scalar_one_or_none()
-    user_data: dict = {}
+    user_data: dict[str, Any] = {}
     if user:
         user_data = {
             "id": str(user.id),
@@ -157,9 +159,7 @@ async def export_gdpr(db: AsyncSession, user_id: UUID) -> dict:
         }
 
     # Accounts --------------------------------------------------------------
-    acct_result = await db.execute(
-        select(Account).where(Account.user_id == user_id)
-    )
+    acct_result = await db.execute(select(Account).where(Account.user_id == user_id))
     accounts_data = [
         {
             "id": str(a.id),
@@ -219,9 +219,7 @@ async def export_gdpr(db: AsyncSession, user_id: UUID) -> dict:
     ]
 
     # Imports ---------------------------------------------------------------
-    imp_result = await db.execute(
-        select(ImportRecord).where(ImportRecord.user_id == user_id)
-    )
+    imp_result = await db.execute(select(ImportRecord).where(ImportRecord.user_id == user_id))
     imports_data = [
         {
             "id": str(i.id),
@@ -260,5 +258,5 @@ async def export_gdpr(db: AsyncSession, user_id: UUID) -> dict:
         "transactions": transactions_data,
         "imports": imports_data,
         "rules": rules_data,
-        "exported_at": datetime.now(timezone.utc).isoformat(),
+        "exported_at": datetime.now(UTC).isoformat(),
     }

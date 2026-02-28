@@ -1,4 +1,5 @@
 """PayPal CSV export parser."""
+
 from __future__ import annotations
 
 import csv
@@ -188,7 +189,7 @@ class PayPalParser(BaseParser):
         errors: list[str] = []
 
         for idx, row in df.iterrows():
-            row_num = int(idx) + 2
+            row_num = int(idx) + 2  # type: ignore[call-overload]
             try:
                 # Date
                 date_col = col_map.get("date")
@@ -219,7 +220,7 @@ class PayPalParser(BaseParser):
                 tx_type = _TYPE_MAP.get(raw_type, "expense" if amount < 0 else "income")
 
                 # Metadata (fee, net, status)
-                metadata: dict = {}
+                metadata: dict[str, str] = {}
                 fee_col = col_map.get("fee")
                 if fee_col:
                     fee_str = str(row[fee_col]).strip()

@@ -5,9 +5,7 @@ from __future__ import annotations
 # Each entry: (name_key, icon, color, is_income, children)
 # Children is a list of (name_key, icon, color) tuples.
 
-SYSTEM_CATEGORIES: list[
-    tuple[str, str, str, bool, list[tuple[str, str, str]]]
-] = [
+SYSTEM_CATEGORIES: list[tuple[str, str, str, bool, list[tuple[str, str, str]]]] = [
     # ── Expense categories ──────────────────────────────────────────────
     (
         "Alimentari",

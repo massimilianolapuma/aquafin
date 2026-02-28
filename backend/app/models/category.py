@@ -4,11 +4,17 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
+
+if TYPE_CHECKING:
+    from app.models.categorization_rule import CategorizationRule
+    from app.models.transaction import Transaction
+    from app.models.user import User
 
 
 class Category(Base):
@@ -44,9 +50,7 @@ class Category(Base):
     is_income: Mapped[bool] = mapped_column(
         sa.Boolean, server_default=sa.text("false"), default=False
     )
-    sort_order: Mapped[int] = mapped_column(
-        sa.Integer, server_default=sa.text("0"), default=0
-    )
+    sort_order: Mapped[int] = mapped_column(sa.Integer, server_default=sa.text("0"), default=0)
 
     created_at: Mapped[datetime] = mapped_column(
         sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False
@@ -68,9 +72,7 @@ class Category(Base):
     children: Mapped[list[Category]] = relationship(
         "Category", back_populates="parent", cascade="all, delete-orphan"
     )
-    transactions: Mapped[list[Transaction]] = relationship(
-        "Transaction", back_populates="category"
-    )
+    transactions: Mapped[list[Transaction]] = relationship("Transaction", back_populates="category")
     categorization_rules: Mapped[list[CategorizationRule]] = relationship(
         "CategorizationRule", back_populates="category"
     )

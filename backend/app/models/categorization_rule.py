@@ -5,14 +5,19 @@ from __future__ import annotations
 import enum
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
 
+if TYPE_CHECKING:
+    from app.models.category import Category
+    from app.models.user import User
 
-class MatchType(str, enum.Enum):
+
+class MatchType(enum.StrEnum):
     """How the rule pattern is matched against transaction descriptions."""
 
     contains = "contains"
@@ -50,9 +55,7 @@ class CategorizationRule(Base):
         server_default="contains",
         default=MatchType.contains,
     )
-    priority: Mapped[int] = mapped_column(
-        sa.Integer, server_default=sa.text("0"), default=0
-    )
+    priority: Mapped[int] = mapped_column(sa.Integer, server_default=sa.text("0"), default=0)
     is_active: Mapped[bool] = mapped_column(
         sa.Boolean, server_default=sa.text("true"), default=True
     )
@@ -69,9 +72,7 @@ class CategorizationRule(Base):
 
     # Relationships
     user: Mapped[User] = relationship("User", back_populates="categorization_rules")
-    category: Mapped[Category] = relationship(
-        "Category", back_populates="categorization_rules"
-    )
+    category: Mapped[Category] = relationship("Category", back_populates="categorization_rules")
 
     def __repr__(self) -> str:
         return f"<CategorizationRule '{self.pattern}' ({self.match_type.value})>"

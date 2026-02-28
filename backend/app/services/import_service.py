@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import json
-import os
-import uuid
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
@@ -25,7 +23,6 @@ from app.models.import_record import (
 from app.models.transaction import CategorizationMethod, Transaction, TransactionType
 from app.services.categorization.engine import CategorizationEngine
 from app.services.categorization.models import CategorizedTransaction
-from app.services.parser.base import RawTransaction
 from app.services.parser.registry import ParserRegistry
 
 
@@ -148,9 +145,7 @@ async def upload_and_parse(
 
     # Determine source type
     try:
-        source_type = SourceType(
-            source_type_hint if source_type_hint else parse_result.source_type
-        )
+        source_type = SourceType(source_type_hint if source_type_hint else parse_result.source_type)
     except ValueError:
         source_type = SourceType.bank_csv
 
@@ -225,7 +220,7 @@ async def confirm_import(
     user_id: UUID,
     import_id: UUID,
     category_overrides: dict[int, str] | None = None,
-) -> ImportRecord:
+) -> tuple[ImportRecord, int]:
     """Confirm an import – create Transaction rows and update the ImportRecord.
 
     *category_overrides* maps ``temp_id`` (0-based index) to a category name
@@ -254,7 +249,6 @@ async def confirm_import(
 
     for idx, cat_tx in enumerate(categorized):
         # Apply category override if present
-        cat_name = overrides.get(idx, cat_tx.categorization.category_name)
         matched_by = cat_tx.categorization.matched_by
 
         if idx in overrides:

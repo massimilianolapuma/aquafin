@@ -54,9 +54,7 @@ async def list_transactions(
         page=page,
         limit=limit,
     )
-    items, total = await transaction_service.list_transactions(
-        db, current_user.id, params
-    )
+    items, total = await transaction_service.list_transactions(db, current_user.id, params)
     return TransactionListResponse(
         items=[TransactionRead.model_validate(t) for t in items],
         total=total,
@@ -72,9 +70,7 @@ async def get_transaction(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> TransactionRead:
     """Return a single transaction by ID."""
-    transaction = await transaction_service.get_transaction(
-        db, current_user.id, transaction_id
-    )
+    transaction = await transaction_service.get_transaction(db, current_user.id, transaction_id)
     return TransactionRead.model_validate(transaction)
 
 
@@ -126,6 +122,4 @@ async def delete_transaction(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> None:
     """Delete a transaction (hard delete)."""
-    await transaction_service.delete_transaction(
-        db, current_user.id, transaction_id
-    )
+    await transaction_service.delete_transaction(db, current_user.id, transaction_id)

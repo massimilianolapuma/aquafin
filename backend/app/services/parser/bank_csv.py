@@ -1,4 +1,5 @@
 """Italian bank CSV parser."""
+
 from __future__ import annotations
 
 import csv
@@ -140,8 +141,8 @@ class BankCSVParser(BaseParser):
     def _find_column(self, columns: pd.Index, candidates: set[str]) -> str | None:
         """Find the first column whose lowered name matches a candidate."""
         for col in columns:
-            if col.strip().lower() in candidates:
-                return col
+            if str(col).strip().lower() in candidates:
+                return str(col)
         return None
 
     # ------------------------------------------------------------------ #
@@ -192,7 +193,7 @@ class BankCSVParser(BaseParser):
         errors: list[str] = []
 
         for idx, row in df.iterrows():
-            row_num = int(idx) + 2  # +2: header is row 1, pandas 0-indexed
+            row_num = int(idx) + 2  # type: ignore[call-overload]  # +2: header row 1, pandas 0-indexed
             try:
                 parsed_date = _parse_italian_date(str(row[date_col]))
 
@@ -216,7 +217,7 @@ class BankCSVParser(BaseParser):
                 tx_type = "income" if amount >= 0 else "expense"
 
                 # Collect extra columns as metadata
-                metadata: dict = {}
+                metadata: dict[str, str] = {}
                 valuta_col = self._find_column(df.columns, {"data valuta"})
                 if valuta_col and valuta_col != date_col:
                     metadata["data_valuta"] = str(row[valuta_col]).strip()

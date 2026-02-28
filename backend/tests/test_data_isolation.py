@@ -23,8 +23,7 @@ from app.main import app
 from app.models.account import Account, AccountType
 from app.models.transaction import Transaction, TransactionType
 from app.models.user import User
-from app.schemas.analytics import AnalyticsSummary, AccountBreakdown, AccountBreakdownResponse
-from app.schemas.export import TransactionExportRow
+from app.schemas.analytics import AccountBreakdownResponse, AnalyticsSummary
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -56,9 +55,7 @@ def _make_mock_user(user_id: uuid.UUID) -> User:
     )
 
 
-def _make_account(
-    account_id: uuid.UUID, user_id: uuid.UUID, name: str
-) -> Account:
+def _make_account(account_id: uuid.UUID, user_id: uuid.UUID, name: str) -> Account:
     """Create a mock Account instance."""
     now = datetime.now(UTC)
     return Account(
@@ -73,9 +70,7 @@ def _make_account(
     )
 
 
-def _make_transaction(
-    account_id: uuid.UUID, description: str, amount: Decimal
-) -> Transaction:
+def _make_transaction(account_id: uuid.UUID, description: str, amount: Decimal) -> Transaction:
     """Create a mock Transaction instance."""
     now = datetime.now(UTC)
     return Transaction(
@@ -95,6 +90,7 @@ def _make_transaction(
 
 
 # ---- Mock DB ----
+
 
 async def _override_get_db() -> AsyncMock:  # type: ignore[misc]
     yield AsyncMock()  # type: ignore[misc]

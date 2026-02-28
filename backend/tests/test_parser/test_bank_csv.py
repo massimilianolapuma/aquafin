@@ -1,4 +1,5 @@
 """Tests for BankCSVParser."""
+
 from __future__ import annotations
 
 from datetime import date
@@ -178,9 +179,7 @@ class TestEncoding:
 class TestMalformedRows:
     def test_bad_date_skipped(self, parser: BankCSVParser) -> None:
         content = (
-            b"Data Operazione;Descrizione;Importo\n"
-            b"INVALID;Test;-10,00\n"
-            b"01/03/2025;Good Row;-5,00\n"
+            b"Data Operazione;Descrizione;Importo\nINVALID;Test;-10,00\n01/03/2025;Good Row;-5,00\n"
         )
         result = parser.parse("bad.csv", content)
         assert result.parsed_count == 1

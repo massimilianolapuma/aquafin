@@ -5,15 +5,20 @@ from __future__ import annotations
 import enum
 import uuid
 from datetime import datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import sqlalchemy as sa
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
 
+if TYPE_CHECKING:
+    from app.models.account import Account
+    from app.models.transaction import Transaction
+    from app.models.user import User
 
-class FileType(str, enum.Enum):
+
+class FileType(enum.StrEnum):
     """Supported import file formats."""
 
     csv = "csv"
@@ -21,7 +26,7 @@ class FileType(str, enum.Enum):
     xlsx = "xlsx"
 
 
-class SourceType(str, enum.Enum):
+class SourceType(enum.StrEnum):
     """Import data source."""
 
     bank_csv = "bank_csv"
@@ -31,7 +36,7 @@ class SourceType(str, enum.Enum):
     manual = "manual"
 
 
-class ImportStatus(str, enum.Enum):
+class ImportStatus(enum.StrEnum):
     """Import processing status."""
 
     pending = "pending"
@@ -79,12 +84,8 @@ class ImportRecord(Base):
         server_default="pending",
         default=ImportStatus.pending,
     )
-    row_count: Mapped[int] = mapped_column(
-        sa.Integer, server_default=sa.text("0"), default=0
-    )
-    imported_count: Mapped[int] = mapped_column(
-        sa.Integer, server_default=sa.text("0"), default=0
-    )
+    row_count: Mapped[int] = mapped_column(sa.Integer, server_default=sa.text("0"), default=0)
+    imported_count: Mapped[int] = mapped_column(sa.Integer, server_default=sa.text("0"), default=0)
     error_log: Mapped[list[Any]] = mapped_column(
         sa.JSON, server_default=sa.text("'[]'::jsonb"), default=list
     )

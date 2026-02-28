@@ -4,9 +4,8 @@ from __future__ import annotations
 
 import csv
 import io
-import json
 import uuid
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from decimal import Decimal
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -16,16 +15,6 @@ from httpx import ASGITransport, AsyncClient
 from app.core.auth import get_current_user
 from app.core.database import get_db
 from app.main import app
-from app.models.account import Account, AccountType
-from app.models.categorization_rule import CategorizationRule, MatchType
-from app.models.category import Category
-from app.models.import_record import (
-    FileType,
-    ImportRecord,
-    ImportStatus,
-    SourceType,
-)
-from app.models.transaction import CategorizationMethod, Transaction, TransactionType
 from app.models.user import User
 from app.schemas.export import ExportFilters, GdprExportResponse, TransactionExportRow
 
@@ -45,7 +34,7 @@ MOCK_TXN_ID = uuid.UUID("00000000-0000-4000-8000-ddd000000001")
 
 
 def _make_mock_user(user_id: uuid.UUID = MOCK_USER_ID) -> User:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return User(
         id=user_id,
         clerk_id=f"clerk_{user_id.hex[:8]}",
@@ -126,7 +115,7 @@ class TestExportSchemas:
             transactions=[],
             imports=[],
             rules=[],
-            exported_at=datetime.now(timezone.utc),
+            exported_at=datetime.now(UTC),
         )
         assert data.user == {"id": "u1"}
         assert isinstance(data.exported_at, datetime)
@@ -149,9 +138,7 @@ class TestExportServiceCsv:
         ):
             from app.services.export_service import export_transactions_csv
 
-            result = await export_transactions_csv(
-                AsyncMock(), MOCK_USER_ID, ExportFilters()
-            )
+            result = await export_transactions_csv(AsyncMock(), MOCK_USER_ID, ExportFilters())
         reader = csv.reader(io.StringIO(result), delimiter=";")
         header = next(reader)
         assert header == [
@@ -186,9 +173,7 @@ class TestExportServiceCsv:
         ):
             from app.services.export_service import export_transactions_csv
 
-            result = await export_transactions_csv(
-                AsyncMock(), MOCK_USER_ID, ExportFilters()
-            )
+            result = await export_transactions_csv(AsyncMock(), MOCK_USER_ID, ExportFilters())
         reader = csv.reader(io.StringIO(result), delimiter=";")
         next(reader)  # skip header
         data = next(reader)
@@ -206,9 +191,7 @@ class TestExportServiceCsv:
         ):
             from app.services.export_service import export_transactions_csv
 
-            result = await export_transactions_csv(
-                AsyncMock(), MOCK_USER_ID, ExportFilters()
-            )
+            result = await export_transactions_csv(AsyncMock(), MOCK_USER_ID, ExportFilters())
         lines = result.strip().split("\n")
         assert len(lines) == 1  # header only
 
@@ -237,9 +220,7 @@ class TestExportServiceJson:
         ):
             from app.services.export_service import export_transactions_json
 
-            result = await export_transactions_json(
-                AsyncMock(), MOCK_USER_ID, ExportFilters()
-            )
+            result = await export_transactions_json(AsyncMock(), MOCK_USER_ID, ExportFilters())
         assert isinstance(result, list)
         assert len(result) == 1
         assert result[0]["amount"] == "100.00"
@@ -254,9 +235,7 @@ class TestExportServiceJson:
         ):
             from app.services.export_service import export_transactions_json
 
-            result = await export_transactions_json(
-                AsyncMock(), MOCK_USER_ID, ExportFilters()
-            )
+            result = await export_transactions_json(AsyncMock(), MOCK_USER_ID, ExportFilters())
         assert result == []
 
 
@@ -447,7 +426,7 @@ class TestExportGdprEndpoint:
                 "transactions": [],
                 "imports": [],
                 "rules": [],
-                "exported_at": datetime.now(timezone.utc).isoformat(),
+                "exported_at": datetime.now(UTC).isoformat(),
             },
         ):
             transport = ASGITransport(app=app)
@@ -473,7 +452,7 @@ class TestExportGdprEndpoint:
                 "transactions": [{"id": "t1"}],
                 "imports": [{"id": "i1"}],
                 "rules": [{"id": "r1"}],
-                "exported_at": datetime.now(timezone.utc).isoformat(),
+                "exported_at": datetime.now(UTC).isoformat(),
             },
         ):
             transport = ASGITransport(app=app)

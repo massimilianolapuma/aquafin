@@ -4,12 +4,18 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import sqlalchemy as sa
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
+
+if TYPE_CHECKING:
+    from app.models.account import Account
+    from app.models.categorization_rule import CategorizationRule
+    from app.models.category import Category
+    from app.models.import_record import ImportRecord
 
 
 class User(Base):
@@ -23,12 +29,8 @@ class User(Base):
         server_default=sa.text("gen_random_uuid()"),
         default=uuid.uuid4,
     )
-    clerk_id: Mapped[str] = mapped_column(
-        sa.String(255), unique=True, index=True, nullable=False
-    )
-    email: Mapped[str] = mapped_column(
-        sa.String(320), unique=True, index=True, nullable=False
-    )
+    clerk_id: Mapped[str] = mapped_column(sa.String(255), unique=True, index=True, nullable=False)
+    email: Mapped[str] = mapped_column(sa.String(320), unique=True, index=True, nullable=False)
     display_name: Mapped[str | None] = mapped_column(sa.String(100), nullable=True)
     locale: Mapped[str] = mapped_column(sa.String(5), server_default="it", default="it")
     preferences: Mapped[dict[str, Any]] = mapped_column(

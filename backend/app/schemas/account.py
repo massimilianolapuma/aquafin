@@ -9,7 +9,6 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from app.models.account import AccountType
 
-
 # ---------------------------------------------------------------------------
 # Request schemas
 # ---------------------------------------------------------------------------

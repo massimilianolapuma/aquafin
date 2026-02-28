@@ -8,6 +8,7 @@ Keywords are tried *longest-first* by the engine so that more-specific entries
 (e.g. ``"amazon prime"`` → Abbonamenti) take precedence over shorter ones
 (e.g. ``"amazon"`` → Elettronica).
 """
+
 from __future__ import annotations
 
 # Dict[str, str] — keyword (lowercase) → category name_key

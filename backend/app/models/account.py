@@ -5,14 +5,20 @@ from __future__ import annotations
 import enum
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
 
+if TYPE_CHECKING:
+    from app.models.import_record import ImportRecord
+    from app.models.transaction import Transaction
+    from app.models.user import User
 
-class AccountType(str, enum.Enum):
+
+class AccountType(enum.StrEnum):
     """Supported account types."""
 
     bank = "bank"
@@ -41,9 +47,7 @@ class Account(Base):
         sa.Enum(AccountType, name="account_type", native_enum=False, length=20),
         nullable=False,
     )
-    currency: Mapped[str] = mapped_column(
-        sa.String(3), server_default="EUR", default="EUR"
-    )
+    currency: Mapped[str] = mapped_column(sa.String(3), server_default="EUR", default="EUR")
     color: Mapped[str | None] = mapped_column(sa.String(7), nullable=True)
     icon: Mapped[str | None] = mapped_column(sa.String(50), nullable=True)
     is_active: Mapped[bool] = mapped_column(

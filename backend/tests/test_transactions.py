@@ -92,7 +92,9 @@ async def client() -> AsyncClient:  # type: ignore[misc]
 
 
 async def _seed_account(
-    session: AsyncSession, user_id: uuid.UUID = MOCK_USER_ID, account_id: uuid.UUID = MOCK_ACCOUNT_ID
+    session: AsyncSession,
+    user_id: uuid.UUID = MOCK_USER_ID,
+    account_id: uuid.UUID = MOCK_ACCOUNT_ID,
 ) -> Account:
     """Create a test account."""
     account = Account(
@@ -163,8 +165,15 @@ async def seeded_db() -> AsyncSession:  # type: ignore[misc]
     async with _TestSession() as session:
         await _seed_user(session)
         await _seed_account(session)
-        await _seed_transaction(session, description="Grocery Store", original_description="GROCERY STORE #123")
-        await _seed_transaction(session, description="Electric Bill", tx_type=TransactionType.income, amount=Decimal("250.00"))
+        await _seed_transaction(
+            session, description="Grocery Store", original_description="GROCERY STORE #123"
+        )
+        await _seed_transaction(
+            session,
+            description="Electric Bill",
+            tx_type=TransactionType.income,
+            amount=Decimal("250.00"),
+        )
         await _seed_transaction(session, description="Coffee Shop", tx_date=date(2025, 5, 1))
         await session.commit()
         yield session  # type: ignore[misc]
@@ -259,7 +268,9 @@ class TestTransactionService:
             await session.commit()
 
             params = TransactionListParams()
-            items, total = await transaction_service.list_transactions(session, MOCK_USER_ID, params)
+            items, total = await transaction_service.list_transactions(
+                session, MOCK_USER_ID, params
+            )
             assert items == []
             assert total == 0
 
@@ -308,7 +319,9 @@ class TestTransactionService:
         assert len(items) == 2
 
         params2 = TransactionListParams(page=2, limit=2)
-        items2, total2 = await transaction_service.list_transactions(seeded_db, MOCK_USER_ID, params2)
+        items2, total2 = await transaction_service.list_transactions(
+            seeded_db, MOCK_USER_ID, params2
+        )
         assert total2 == 3
         assert len(items2) == 1
 
@@ -400,7 +413,9 @@ class TestTransactionService:
         from app.services import transaction_service
 
         async with _TestSession() as session:
-            count = await transaction_service.bulk_categorize(session, MOCK_USER_ID, [], MOCK_CATEGORY_ID)
+            count = await transaction_service.bulk_categorize(
+                session, MOCK_USER_ID, [], MOCK_CATEGORY_ID
+            )
             assert count == 0
 
     @pytest.mark.asyncio
@@ -462,7 +477,9 @@ class TestTransactionService:
             await session.commit()
 
             params = TransactionListParams(account_id=MOCK_ACCOUNT_ID)
-            items, total = await transaction_service.list_transactions(session, MOCK_USER_ID, params)
+            items, total = await transaction_service.list_transactions(
+                session, MOCK_USER_ID, params
+            )
             assert total == 1
             assert items[0].description == "Tx A"
 

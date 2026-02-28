@@ -3,6 +3,7 @@
 Each entry is a tuple of ``(compiled_regex, category_name_key, confidence)``.
 Patterns are checked in order; the first match wins.
 """
+
 from __future__ import annotations
 
 import re

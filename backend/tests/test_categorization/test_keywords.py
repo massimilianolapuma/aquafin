@@ -1,4 +1,5 @@
 """Tests for the keyword dictionary."""
+
 from __future__ import annotations
 
 from app.seeds import SYSTEM_CATEGORIES
@@ -25,15 +26,11 @@ class TestKeywordMap:
     def test_all_values_are_valid_categories(self) -> None:
         valid = _all_category_name_keys()
         for keyword, category in KEYWORD_MAP.items():
-            assert category in valid, (
-                f"Keyword {keyword!r} maps to unknown category {category!r}"
-            )
+            assert category in valid, f"Keyword {keyword!r} maps to unknown category {category!r}"
 
     def test_all_keys_are_lowercase(self) -> None:
         for keyword in KEYWORD_MAP:
-            assert keyword == keyword.lower(), (
-                f"Keyword {keyword!r} is not lowercase"
-            )
+            assert keyword == keyword.lower(), f"Keyword {keyword!r} is not lowercase"
 
     def test_specific_mappings(self) -> None:
         assert KEYWORD_MAP["esselunga"] == "Supermercato"

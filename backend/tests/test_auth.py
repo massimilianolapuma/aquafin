@@ -5,10 +5,8 @@ from __future__ import annotations
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.core.auth import get_current_user, get_current_user_id
+from app.core.auth import get_current_user_id
 from app.main import app
-from app.models.user import User
-
 
 # ---------------------------------------------------------------------------
 # Helpers / overrides
@@ -101,16 +99,12 @@ class TestClerkWebhook:
 class TestGetMe:
     """GET /api/v1/users/me."""
 
-    async def test_returns_404_when_user_not_synced(
-        self, authed_client: AsyncClient
-    ) -> None:
+    async def test_returns_404_when_user_not_synced(self, authed_client: AsyncClient) -> None:
         """If the webhook hasn't created the user yet, expect 404."""
         resp = await authed_client.get("/api/v1/users/me")
         assert resp.status_code == 404
 
-    async def test_returns_user_after_webhook(
-        self, authed_client: AsyncClient
-    ) -> None:
+    async def test_returns_user_after_webhook(self, authed_client: AsyncClient) -> None:
         # First, create the user via webhook
         webhook_payload = {
             "type": "user.created",
@@ -214,9 +208,7 @@ class TestUnauthenticated:
         assert resp.status_code in (401, 422)
 
     async def test_put_me_no_auth(self, unauthed_client: AsyncClient) -> None:
-        resp = await unauthed_client.put(
-            "/api/v1/users/me", json={"display_name": "x"}
-        )
+        resp = await unauthed_client.put("/api/v1/users/me", json={"display_name": "x"})
         assert resp.status_code in (401, 422)
 
     async def test_delete_me_no_auth(self, unauthed_client: AsyncClient) -> None:

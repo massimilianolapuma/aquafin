@@ -9,7 +9,6 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from app.models.import_record import FileType, ImportStatus, SourceType
 
-
 # ---------------------------------------------------------------------------
 # Upload response
 # ---------------------------------------------------------------------------

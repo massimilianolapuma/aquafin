@@ -1,4 +1,5 @@
 """Tests for the bank-pattern regex rules."""
+
 from __future__ import annotations
 
 import re

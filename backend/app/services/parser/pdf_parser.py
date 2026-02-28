@@ -1,4 +1,5 @@
 """PDF parser for structured bank statement tables."""
+
 from __future__ import annotations
 
 import io

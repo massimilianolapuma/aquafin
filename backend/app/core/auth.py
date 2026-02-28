@@ -27,7 +27,7 @@ async def _get_jwks() -> list[dict[str, Any]]:
     """Fetch Clerk JWKS, with in-memory caching."""
     now = time.time()
     if _jwks_cache["keys"] and now - _jwks_cache["fetched_at"] < _JWKS_CACHE_TTL:
-        return _jwks_cache["keys"]  # type: ignore[return-value]
+        return _jwks_cache["keys"]  # type: ignore[no-any-return]
 
     url = f"https://{settings.CLERK_DOMAIN}/.well-known/jwks.json"
     async with httpx.AsyncClient() as client:
@@ -93,7 +93,7 @@ async def get_current_user_id(
 
         payload = jwt.decode(
             token,
-            public_key,
+            public_key,  # type: ignore[arg-type]
             algorithms=["RS256"],
             options={"require": ["sub", "exp", "iat"]},
         )
@@ -107,21 +107,21 @@ async def get_current_user_id(
 
         return clerk_id
 
-    except jwt.ExpiredSignatureError:
+    except jwt.ExpiredSignatureError as exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token has expired",
-        )
+        ) from exc
     except jwt.InvalidTokenError as exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Invalid token: {exc}",
-        )
+        ) from exc
     except httpx.HTTPError as exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Failed to fetch JWKS: {exc}",
-        )
+        ) from exc
 
 
 async def get_current_user(

@@ -3,18 +3,16 @@
 from __future__ import annotations
 
 import uuid
-from datetime import date, datetime
+from datetime import date
 from decimal import Decimal
-
-import pytest
 
 from app.models import (
     Account,
     AccountType,
     Base,
-    Category,
     CategorizationMethod,
     CategorizationRule,
+    Category,
     FileType,
     ImportRecord,
     ImportStatus,
@@ -24,7 +22,6 @@ from app.models import (
     TransactionType,
     User,
 )
-
 
 # ---------------------------------------------------------------------------
 # Model instantiation
@@ -295,5 +292,12 @@ class TestBaseModel:
 
     def test_all_tables_registered(self) -> None:
         table_names = set(Base.metadata.tables.keys())
-        expected = {"users", "accounts", "categories", "transactions", "imports", "categorization_rules"}
+        expected = {
+            "users",
+            "accounts",
+            "categories",
+            "transactions",
+            "imports",
+            "categorization_rules",
+        }
         assert expected.issubset(table_names)

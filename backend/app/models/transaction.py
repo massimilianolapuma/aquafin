@@ -6,15 +6,20 @@ import enum
 import uuid
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import sqlalchemy as sa
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
 
+if TYPE_CHECKING:
+    from app.models.account import Account
+    from app.models.category import Category
+    from app.models.import_record import ImportRecord
 
-class TransactionType(str, enum.Enum):
+
+class TransactionType(enum.StrEnum):
     """Transaction direction."""
 
     income = "income"
@@ -22,7 +27,7 @@ class TransactionType(str, enum.Enum):
     transfer = "transfer"
 
 
-class CategorizationMethod(str, enum.Enum):
+class CategorizationMethod(enum.StrEnum):
     """How the transaction was categorized."""
 
     manual = "manual"
@@ -64,19 +69,11 @@ class Transaction(Base):
         sa.ForeignKey("imports.id", ondelete="SET NULL"),
         nullable=True,
     )
-    amount: Mapped[Decimal] = mapped_column(
-        sa.Numeric(12, 2), nullable=False
-    )
-    currency: Mapped[str] = mapped_column(
-        sa.String(3), server_default="EUR", default="EUR"
-    )
-    date: Mapped[date] = mapped_column(
-        sa.Date, nullable=False, index=True
-    )
+    amount: Mapped[Decimal] = mapped_column(sa.Numeric(12, 2), nullable=False)
+    currency: Mapped[str] = mapped_column(sa.String(3), server_default="EUR", default="EUR")
+    date: Mapped[date] = mapped_column(sa.Date, nullable=False, index=True)
     description: Mapped[str | None] = mapped_column(sa.String(500), nullable=True)
-    original_description: Mapped[str | None] = mapped_column(
-        sa.String(500), nullable=True
-    )
+    original_description: Mapped[str | None] = mapped_column(sa.String(500), nullable=True)
     type: Mapped[TransactionType] = mapped_column(
         sa.Enum(TransactionType, name="transaction_type", native_enum=False, length=20),
         nullable=False,
@@ -112,9 +109,7 @@ class Transaction(Base):
 
     # Relationships
     account: Mapped[Account] = relationship("Account", back_populates="transactions")
-    category: Mapped[Category | None] = relationship(
-        "Category", back_populates="transactions"
-    )
+    category: Mapped[Category | None] = relationship("Category", back_populates="transactions")
     import_record: Mapped[ImportRecord | None] = relationship(
         "ImportRecord", back_populates="transactions"
     )

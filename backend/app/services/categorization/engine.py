@@ -1,4 +1,5 @@
 """Rule-based categorization engine."""
+
 from __future__ import annotations
 
 import re
@@ -7,7 +8,7 @@ from dataclasses import dataclass
 from app.services.parser.base import RawTransaction
 
 from .keywords import KEYWORD_MAP
-from .models import CategorizedTransaction, CategorizationResult
+from .models import CategorizationResult, CategorizedTransaction
 from .patterns import PATTERN_RULES
 
 
@@ -57,9 +58,7 @@ class CategorizationEngine:
             categorization=result,
         )
 
-    def categorize_batch(
-        self, transactions: list[RawTransaction]
-    ) -> list[CategorizedTransaction]:
+    def categorize_batch(self, transactions: list[RawTransaction]) -> list[CategorizedTransaction]:
         """Categorize a list of transactions."""
         return [self.categorize(t) for t in transactions]
 
