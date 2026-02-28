@@ -1,0 +1,31 @@
+{
+  "home": {
+    "tagline": "Gestisci le tue finanze personali. Importa, categorizza, analizza.",
+    "getStarted": "Inizia"
+  },
+  "common": {
+    "loading": "Caricamento...",
+    "error": "Si è verificato un errore",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "create": "Crea",
+    "search": "Cerca",
+    "filter": "Filtra",
+    "export": "Esporta",
+    "import": "Importa",
+    "confirm": "Conferma",
+    "back": "Indietro"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "transactions": "Transazioni",
+    "upload": "Importa file",
+    "categories": "Categorie",
+    "analytics": "Analisi",
+    "accounts": "Conti",
+    "export": "Esporta",
+    "settings": "Impostazioni"
+  }
+}

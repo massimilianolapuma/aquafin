@@ -1,0 +1,31 @@
+{
+  "home": {
+    "tagline": "Manage your personal finances. Import, categorize, analyze.",
+    "getStarted": "Get started"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import",
+    "confirm": "Confirm",
+    "back": "Back"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "transactions": "Transactions",
+    "upload": "Import file",
+    "categories": "Categories",
+    "analytics": "Analytics",
+    "accounts": "Accounts",
+    "export": "Export",
+    "settings": "Settings"
+  }
+}

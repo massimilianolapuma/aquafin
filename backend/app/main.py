@@ -1,0 +1,48 @@
+"""FastAPI application factory."""
+
+from contextlib import asynccontextmanager
+from collections.abc import AsyncIterator
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.core.config import settings
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """Application lifespan – startup and shutdown events."""
+    # Startup
+    yield
+    # Shutdown
+
+
+def create_app() -> FastAPI:
+    """Create and configure the FastAPI application."""
+    app = FastAPI(
+        title=settings.APP_NAME,
+        version=settings.APP_VERSION,
+        docs_url="/api/docs",
+        openapi_url="/api/openapi.json",
+        lifespan=lifespan,
+    )
+
+    # CORS
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.CORS_ORIGINS,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    # Health check
+    @app.get("/api/health", tags=["health"])
+    async def health_check() -> dict[str, str]:
+        """Health check endpoint."""
+        return {"status": "ok", "service": settings.APP_NAME}
+
+    return app
+
+
+app = create_app()

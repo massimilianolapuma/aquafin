@@ -1,0 +1,1 @@
+"""Aquafin Backend – FastAPI application."""

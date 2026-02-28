@@ -1,0 +1,72 @@
+# Aquafin – Docker Compose (production-like)
+# Usage: docker compose up -d
+
+services:
+
+  # ── PostgreSQL 16 ──────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: aquafin-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-aquafin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aquafin}
+      POSTGRES_DB: ${POSTGRES_DB:-aquafin}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-aquafin}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - aquafin-net
+
+  # ── Backend (FastAPI) ──────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: aquafin-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-aquafin}:${POSTGRES_PASSWORD:-aquafin}@db:5432/${POSTGRES_DB:-aquafin}
+      CORS_ORIGINS: '["http://localhost:3000"]'
+      CLERK_SECRET_KEY: ${CLERK_SECRET_KEY:-}
+      CLERK_PUBLISHABLE_KEY: ${CLERK_PUBLISHABLE_KEY:-}
+      DEBUG: ${DEBUG:-false}
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    networks:
+      - aquafin-net
+
+  # ── Frontend (Next.js) ─────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: aquafin-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:8000
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${CLERK_PUBLISHABLE_KEY:-}
+      NEXT_PUBLIC_DEFAULT_LOCALE: ${DEFAULT_LOCALE:-it}
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    networks:
+      - aquafin-net
+
+volumes:
+  pgdata:
+    driver: local
+
+networks:
+  aquafin-net:
+    driver: bridge
