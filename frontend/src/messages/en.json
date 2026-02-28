@@ -25,7 +25,9 @@
         "categories": "Categories",
         "analytics": "Analytics",
         "accounts": "Accounts",
+        "import": "Import",
         "export": "Export",
-        "settings": "Settings"
+        "settings": "Settings",
+        "locale_switch": "Switch language"
     }
 }
