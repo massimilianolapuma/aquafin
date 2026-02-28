@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     # Auth (Clerk)
     CLERK_SECRET_KEY: str = ""
     CLERK_PUBLISHABLE_KEY: str = ""
+    CLERK_DOMAIN: str = ""
 
     # File upload
     UPLOAD_MAX_SIZE_MB: int = 10
